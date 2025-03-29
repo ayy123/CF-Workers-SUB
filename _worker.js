@@ -190,7 +190,7 @@ export default {
 			} else if (订阅格式 == 'loon') {
 				subConverterUrl = `${subProtocol}://${subConverter}/sub?target=loon&url=${encodeURIComponent(订阅转换URL)}&insert=false&config=${encodeURIComponent(subConfig)}&emoji=true&list=false&tfo=false&scv=true&fdn=false&sort=false`;
 			}
-			//console.log(订阅转换URL);
+			console.log(订阅转换URL);
 			try {
 				const subConverterResponse = await fetch(subConverterUrl);
 
