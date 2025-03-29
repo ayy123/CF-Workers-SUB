@@ -130,7 +130,7 @@ export default {
 			
 			// 分离原始节点和订阅链接
 			const 原始节点数据 = 原始订阅响应[0].filter(line => !line.startsWith('http'));
-			const 需转换订阅链接 += 原始订阅响应[1];
+			const 需转换订阅链接 = 原始订阅响应[1];
 			
 			// 合并自建节点
 			req_data = MainData + '\n' + 原始节点数据.join('\n');
