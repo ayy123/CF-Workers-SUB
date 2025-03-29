@@ -125,30 +125,31 @@ export default {
 			else if (url.searchParams.has('surge')) 追加UA = 'surge';
 			else if (url.searchParams.has('quanx')) 追加UA = 'Quantumult%20X';
 			else if (url.searchParams.has('loon')) 追加UA = 'Loon';
-
-			// 第一阶段：获取原始订阅数据
+			
 			const 原始订阅响应 = await getSUB(urls, request, 追加UA, userAgentHeader);
-			console.log('原始订阅响应:', 原始订阅响应);
 			
-			// 合并节点数据
-			req_data += 原始订阅响应[0].join('\n');
+			// 分离原始节点和订阅链接
+			const 原始节点数据 = 原始订阅响应[0].filter(line => !line.startsWith('http'));
+			const 需转换订阅链接 = 原始订阅响应[1];
 			
-			// 生成转换参数（需要编码处理）
+			// 合并自建节点
+			req_data = MainData + '\n' + 原始节点数据.join('\n');
+			
+			// 生成转换参数
 			const 转换参数 = encodeURIComponent(
-			原始订阅响应[1] 
-			+ (env.WARP ? `|${await ADD(env.WARP).join("|")}` : '')
+			需转换订阅链接 + 
+			(env.WARP ? `|${await ADD(env.WARP).join("|")}` : '')
 			);
 			
-			// 第二阶段：请求订阅转换服务
+			// 第二阶段：直接获取转换结果
 			const 临时转换URL = `${subProtocol}://${subConverter}/sub?target=mixed&url=${转换参数}&insert=false`;
-			console.log('订阅转换URL:', 临时转换URL);
+			const 转换后响应 = await fetch(临时转换URL);
+			const 转换后内容 = await 转换后响应.text();
 			
-			const 转换后响应 = await getSUB(临时转换URL, request, 追加UA, userAgentHeader);
-			console.log('转换后响应:', 转换后响应);
-			
-			// 合并最终数据
-			req_data += 转换后响应[0].join('\n');
-			订阅转换URL += 转换后响应[1] ? `|${转换后响应[1]}` : '';
+			if (isValidBase64(转换后内容)) {
+			//console.log('Base64订阅: ' + response.apiUrl);
+			req_data += base64Decode(转换后内容) + '\n'; // 解码并追加内容
+			}
 
 			if (env.WARP) 订阅转换URL += "|" + (await ADD(env.WARP)).join("|");
 			//修复中文错误
