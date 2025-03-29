@@ -22,7 +22,7 @@ https://raw.githubusercontent.com/mahdibland/SSAggregator/master/sub/sub_merge.t
 https://raw.githubusercontent.com/Pawdroid/Free-servers/refs/heads/main/sub
 `
 
-let urls = [];
+let urls = [`https://proxypool1999.banyunxiaoxi.icu/clash/proxies`];
 let subConverter = "SUBAPI.cmliussss.net"; //在线订阅转换后端，目前使用CM的订阅转换功能。支持自建psub 可自行搭建https://github.com/bulianglin/psub
 let subConfig = "https://raw.githubusercontent.com/cmliu/ACL4SSR/main/Clash/config/ACL4SSR_Online_MultiCountry.ini"; //订阅配置文件
 let subProtocol = 'https';
@@ -85,6 +85,7 @@ export default {
 				if (env.LINKSUB) urls = await ADD(env.LINKSUB);
 			}
 			let 重新汇总所有链接 = await ADD(MainData + '\n' + urls.join('\n'));
+      //let 重新汇总所有链接 = await ADD(urls.join('\n'));
 			let 自建节点 = "";
 			let 订阅链接 = "";
 			for (let x of 重新汇总所有链接) {
@@ -125,7 +126,7 @@ export default {
 			else if (url.searchParams.has('surge')) 追加UA = 'surge';
 			else if (url.searchParams.has('quanx')) 追加UA = 'Quantumult%20X';
 			else if (url.searchParams.has('loon')) 追加UA = 'Loon';
-			
+
 			const 原始订阅响应 = await getSUB(urls, request, 追加UA, userAgentHeader);
 			
 			// 分离原始节点和订阅链接
@@ -133,19 +134,20 @@ export default {
 			const 需转换订阅链接 = 原始订阅响应[1];
 			
 			// 合并自建节点
-			req_data = MainData + '\n' + 原始节点数据.join('\n');
+			req_data += 原始节点数据.join('\n');
 			
 			// 生成转换参数
 			const 转换参数 = encodeURIComponent(需转换订阅链接);
 			
 			// 第二阶段：直接获取转换结果
 			const 临时转换URL = `${subProtocol}://${subConverter}/sub?target=mixed&url=${转换参数}&insert=false`;
+      console.log(临时转换URL);
 			const 转换后响应 = await fetch(临时转换URL);
 			const 转换后内容 = await 转换后响应.text();
 			
 			if (isValidBase64(转换后内容)) {
-			//console.log('Base64订阅: ' + response.apiUrl);
-			req_data += base64Decode(转换后内容) + '\n'; // 解码并追加内容
+			  //console.log('Base64订阅: ' + response.apiUrl);
+			  req_data += base64Decode(转换后内容) + '\n'; // 解码并追加内容
 			}
 
 			if (env.WARP) 订阅转换URL += "|" + (await ADD(env.WARP)).join("|");
@@ -444,10 +446,18 @@ async function getSUB(api, request, 追加UA, userAgentHeader) {
 				const content = await response.value || 'null'; // 获取响应的内容
 				if (content.includes('proxies:')) {
 					//console.log('Clash订阅: ' + response.apiUrl);
-					订阅转换URLs += "|" + response.apiUrl; // Clash 配置
+          if (订阅转换URLs) {
+            订阅转换URLs += "|" + response.apiUrl; // 非首次，添加分隔符
+          } else {
+              订阅转换URLs = response.apiUrl; // 首次直接赋值
+          }
 				} else if (content.includes('outbounds"') && content.includes('inbounds"')) {
 					//console.log('Singbox订阅: ' + response.apiUrl);
-					订阅转换URLs += "|" + response.apiUrl; // Singbox 配置
+          if (订阅转换URLs) {
+            订阅转换URLs += "|" + response.apiUrl; // 非首次，添加分隔符
+          } else {
+              订阅转换URLs = response.apiUrl; // 首次直接赋值
+          }
 				} else if (content.includes('://')) {
 					//console.log('明文订阅: ' + response.apiUrl);
 					newapi += content + '\n'; // 追加内容
