@@ -134,14 +134,14 @@ export default {
 			const 需转换订阅链接 = 原始订阅响应[1];
 			
 			// 合并自建节点
-			req_data += 原始节点数据.join('\n');
+			req_data = MainData + '\n' + 原始节点数据.join('\n');
 			
 			// 生成转换参数
 			const 转换参数 = encodeURIComponent(需转换订阅链接);
 			
 			// 第二阶段：直接获取转换结果
 			const 临时转换URL = `${subProtocol}://${subConverter}/sub?target=mixed&url=${转换参数}&insert=false`;
-      console.log(临时转换URL);
+      //console.log(临时转换URL);
 			const 转换后响应 = await fetch(临时转换URL);
 			const 转换后内容 = await 转换后响应.text();
 			
@@ -209,10 +209,10 @@ export default {
 			} else if (订阅格式 == 'loon') {
 				subConverterUrl = `${subProtocol}://${subConverter}/sub?target=loon&url=${encodeURIComponent(订阅转换URL)}&insert=false&config=${encodeURIComponent(subConfig)}&emoji=true&list=false&tfo=false&scv=true&fdn=false&sort=false`;
 			}
-			//console.log(订阅转换URL);
+			//console.log(subConverterUrl);
 			try {
 				const subConverterResponse = await fetch(subConverterUrl);
-
+        //console.log(subConverterResponse);
 				if (!subConverterResponse.ok) {
 					return new Response(base64Data, {
 						headers: {
@@ -227,7 +227,7 @@ export default {
 				if (订阅格式 == 'clash') subConverterContent = await clashFix(subConverterContent);
 				return new Response(subConverterContent, {
 					headers: {
-						"Content-Disposition": `attachment; filename*=utf-8''${encodeURIComponent(FileName)}`,
+						//"Content-Disposition": `attachment; filename*=utf-8''${encodeURIComponent(FileName)}`,
 						"content-type": "text/plain; charset=utf-8",
 						"Profile-Update-Interval": `${SUBUpdateTime}`,
 						//"Subscription-Userinfo": `upload=${UD}; download=${UD}; total=${total}; expire=${expire}`,
