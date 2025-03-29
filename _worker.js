@@ -542,7 +542,6 @@ async function getSUB(api, request, 追加UA, userAgentHeader) {
         if (content.includes("proxies:")) {
           //console.log('Clash订阅: ' + response.apiUrl);
           订阅转换URLs += "|" + response.apiUrl; // Clash 配置
-          subConverterUrl =
             subConverterUrl = `${subProtocol}://${subConverter}/sub?target=mixed&url=${encodeURIComponent(
               response.apiUrl
             )}&insert=false`;
@@ -556,7 +555,6 @@ async function getSUB(api, request, 追加UA, userAgentHeader) {
         ) {
           //console.log('Singbox订阅: ' + response.apiUrl);
           订阅转换URLs += "|" + response.apiUrl; // Singbox 配置
-          subConverterUrl =
             subConverterUrl = `${subProtocol}://${subConverter}/sub?target=mixed&url=${encodeURIComponent(
               response.apiUrl
             )}&insert=false`;
