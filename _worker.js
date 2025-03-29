@@ -129,7 +129,8 @@ export default {
 			const 请求订阅响应内容 = await getSUB(urls, request, 追加UA, userAgentHeader);
 			console.log(请求订阅响应内容);
 			req_data += 请求订阅响应内容[0].join('\n');
-			订阅转换URL += "|" + 请求订阅响应内容[1];
+			//订阅转换URL += "|" + 请求订阅响应内容[1];
+			订阅转换URL += 请求订阅响应内容[1];
 
 			if (env.WARP) 订阅转换URL += "|" + (await ADD(env.WARP)).join("|");
 			//修复中文错误
